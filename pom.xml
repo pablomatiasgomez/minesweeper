@@ -103,7 +103,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.pablomatiasgomez.web.Main</mainClass>
+                            <mainClass>com.pablomatiasgomez.minesweeper.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
