@@ -25,8 +25,8 @@ public class GameController {
 	private static final Logger LOG = LoggerFactory.getLogger(GameController.class);
 
 	// Not the cleanest way of implementing the mutations, but fine for now given that there are only
-	// two things that can be done: opening a cell, or adding a flag to the cell..
-	private static final Pattern OPEN_CELL_PATH = Pattern.compile("^cells/(\\d+)/(\\d+)/opened$");
+	// two things that can be done: reveal a cell, or adding a flag to the cell..
+	private static final Pattern REVEAL_CELL_PATH = Pattern.compile("^cells/(\\d+)/(\\d+)/revealed$");
 	private static final Pattern FLAG_CELL_PATH = Pattern.compile("^cells/(\\d+)/(\\d+)/hasFlag$");
 
 	private final JsonTransformer jsonTransformer;
@@ -40,7 +40,7 @@ public class GameController {
 		this.jsonTransformer = jsonTransformer;
 		this.gameService = gameService;
 		this.patchOperations = ImmutableMap.of(
-				OPEN_CELL_PATH, (gameId, row, col, value) -> gameService.openCell(gameId, row, col),
+				REVEAL_CELL_PATH, (gameId, row, col, value) -> gameService.revealCell(gameId, row, col),
 				FLAG_CELL_PATH, (gameId, row, col, value) -> gameService.flagCell(gameId, row, col, (boolean) value));
 		registerRoutes();
 	}

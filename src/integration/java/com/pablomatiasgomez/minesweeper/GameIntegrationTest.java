@@ -53,7 +53,7 @@ public class GameIntegrationTest {
 				.body("cells", hasSize(10))
 				.body("cells[1]", hasSize(15))
 				.body("cells", hasItem(hasItem(allOf(
-						hasEntry("opened", Boolean.FALSE),
+						hasEntry("revealed", Boolean.FALSE),
 						hasEntry("hasFlag", Boolean.FALSE)))));
 	}
 
@@ -79,7 +79,7 @@ public class GameIntegrationTest {
 	}
 
 	@Test
-	public void testOpenCell() {
+	public void testRevealCell() {
 		String gameId = given()
 				.contentType(ContentType.JSON)
 				.body(new CreateGameRequest(15, 20))
@@ -95,7 +95,7 @@ public class GameIntegrationTest {
 
 		Integer row = cellWithNoMine.getKey();
 		Integer col = cellWithNoMine.getRight();
-		String path = "cells/" + row + "/" + col + "/opened";
+		String path = "cells/" + row + "/" + col + "/revealed";
 		given()
 				.contentType(ContentType.JSON)
 				.body(Collections.singletonList(new JsonPatch(JsonPatchOp.REPLACE, path, Boolean.TRUE)))
@@ -103,7 +103,7 @@ public class GameIntegrationTest {
 				.then()
 				.statusCode(HttpServletResponse.SC_OK)
 				.body("id", equalTo(gameId))
-				.body("cells[" + row + "][" + col + "].opened", equalTo(true))
+				.body("cells[" + row + "][" + col + "].revealed", equalTo(true))
 				.body("cells[" + row + "][" + col + "].hasFlag", equalTo(false))
 				// The cell is now reveled so we are able to see if it has a mine and the number of adjacent mines.
 				.body("cells[" + row + "][" + col + "].hasMine", equalTo(false))

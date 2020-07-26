@@ -12,7 +12,7 @@
         if (!e.target) return;
         let row = e.target.getAttribute("data-row");
         let col = e.target.getAttribute("data-col");
-        apiConnector.openCell(currentGameId, row, col).then(updateAllCells);
+        apiConnector.revealCell(currentGameId, row, col).then(updateAllCells);
     };
 
     gameCells.addEventListener('contextmenu', function (e) {
@@ -28,7 +28,7 @@
         gameCells.innerHTML = game.cells.map((cells, rowIndex) => {
             let colTds = cells.map((cell, colIndex) => {
                 let classes = "";
-                if (cell.opened) classes += " opened";
+                if (cell.revealed) classes += " revealed";
                 if (cell.hasMine) classes += " has-mine";
                 if (cell.hasFlag) classes += " has-flag";
                 let content = cell.adjacentMinesCount && !cell.hasMine ? cell.adjacentMinesCount : "";

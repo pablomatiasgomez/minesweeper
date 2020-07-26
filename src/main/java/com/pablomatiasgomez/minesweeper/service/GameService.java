@@ -7,12 +7,17 @@ import com.pablomatiasgomez.minesweeper.repository.GameRepository;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class GameService {
 
+	public static final double MINES_RATIO_PER_CELLS = 0.15;
+	private static final int MIN_ROWS = 10;
 	private static final int MAX_ROWS = 30;
+	private static final int MIN_COLS = 10;
 	private static final int MAX_COLS = 30;
 	private static final Random random = new Random();
 
@@ -29,8 +34,8 @@ public class GameService {
 	 * @return the created {@link Game}
 	 */
 	public Game createGame(int rowsCount, int colsCount) {
-		rowsCount = Math.min(rowsCount, MAX_ROWS);
-		colsCount = Math.min(colsCount, MAX_COLS);
+		rowsCount = Math.max(Math.min(rowsCount, MAX_ROWS), MIN_ROWS);
+		colsCount = Math.max(Math.min(colsCount, MAX_COLS), MIN_COLS);
 		int minesCount = numberOfMines(rowsCount, colsCount);
 		List<List<GameCell>> cells = createCells(rowsCount, colsCount, minesCount);
 		Game game = new Game(rowsCount, colsCount, minesCount, GameStatus.PLAYING, cells);
@@ -45,21 +50,38 @@ public class GameService {
 				.orElseThrow(() -> new IllegalArgumentException("Game not found!"));
 	}
 
-	public Game openCell(String gameId, int row, int col) {
+	/**
+	 * Reveals the cell at the given position.
+	 * If it has a mine, the game ends with a {@link GameStatus#LOST} status.
+	 * If the cell has no adjacent mines, all the adjacent cells are revealed.
+	 *
+	 * @return the updated {@link Game}
+	 */
+	public Game revealCell(String gameId, int row, int col) {
 		Game game = getGame(gameId);
-		GameCell cell = game.getCells().get(row).get(col);
-		if (cell.isOpened()) {
-			throw new IllegalStateException("Cell is already opened!");
+		if (GameStatus.FINISHED_STATUES.contains(game.getStatus())) {
+			throw new IllegalStateException("Game is already finished!");
 		}
-		cell.setOpened(true);
-		if (cell.getHasMine()) {
-			game.setStatus(GameStatus.LOST);
-		}
-		// TODO handle win case (mines == 0?)
-		if (cell.getAdjacentMinesCount() == 0) {
-			// TODO open all adjacent mines.
+		revealCell(game, row, col);
+		if (!GameStatus.FINISHED_STATUES.contains(game.getStatus()) && gameIsAlreadyWon(game)) {
+			game.setStatus(GameStatus.WON);
 		}
 		return gameRepository.updateGame(game);
+	}
+
+	private void revealCell(Game game, int row, int col) {
+		GameCell cell = game.getCells().get(row).get(col);
+		if (cell.isRevealed()) {
+			return;
+		}
+		cell.setRevealed(true);
+		if (cell.getHasMine()) {
+			game.setStatus(GameStatus.LOST);
+			return;
+		}
+		if (cell.getAdjacentMinesCount() == 0) {
+			executeForAllAdjacentCells(game.getRowsCount(), game.getColsCount(), row, col, (x, y) -> revealCell(game, x, y));
+		}
 	}
 
 	public Game flagCell(String gameId, int row, int col, boolean hasFlag) {
@@ -67,6 +89,22 @@ public class GameService {
 		GameCell cell = game.getCells().get(row).get(col);
 		cell.setHasFlag(hasFlag);
 		return gameRepository.updateGame(game);
+	}
+
+
+	/**
+	 * Checks if the given game is already won, which happens if all the cells,
+	 * except the ones that have mines, were already revealed.
+	 */
+	private boolean gameIsAlreadyWon(Game game) {
+		for (List<GameCell> cells : game.getCells()) {
+			for (GameCell cell : cells) {
+				if (!cell.isRevealed() && !cell.getHasMine()) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	private List<List<GameCell>> createCells(int rowsCount, int colsCount, int minesCount) {
@@ -107,33 +145,41 @@ public class GameService {
 	 * @return the number of adjacent mines.
 	 */
 	private int calculateAdjacentMinesCount(boolean[][] mines, int row, int col) {
-		int count = 0;
+		AtomicInteger count = new AtomicInteger();
+		executeForAllAdjacentCells(mines.length, mines[0].length, row, col, (x, y) -> {
+			if (mines[x][y]) {
+				count.getAndIncrement();
+			}
+		});
+		return count.get();
+	}
+
+	/**
+	 * Executes the provided function for all the adjacent cells, that is,
+	 * if the cell is not in a border, all then 9 cells that are around it, no including it self.
+	 */
+	private void executeForAllAdjacentCells(int rowsCount, int colsCount, int row, int col, BiConsumer<Integer, Integer> fn) {
 		for (int x = row - 1; x <= row + 1; x++) {
-			if (x < 0 || x >= mines.length) {
+			if (x < 0 || x >= rowsCount) {
 				continue;
 			}
 			for (int y = col - 1; y <= col + 1; y++) {
-				if (y < 0 || y >= mines[x].length) {
+				if (y < 0 || y >= colsCount) {
 					continue;
 				}
 				if (x == row && y == col) {
 					continue;
 				}
-				if (mines[x][y]) {
-					count++;
-				}
+				fn.accept(x, y);
 			}
 		}
-		return count;
 	}
 
 	/**
 	 * mines count will be, for now, 15%, of the total cells, rounding down.
-	 *
-	 * @return the number of mines that the game will have.
 	 */
 	private int numberOfMines(int rowsCount, int colsCount) {
-		return (int) Math.floor(rowsCount * colsCount * 0.15);
+		return (int) Math.floor(rowsCount * colsCount * MINES_RATIO_PER_CELLS);
 	}
 
 }

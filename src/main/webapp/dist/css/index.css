@@ -9,12 +9,14 @@
     text-align: center;
 }
 
-#game-cells td.opened {
+#game-cells td.revealed {
     background-color: lightgrey;
 }
 
-#game-cells td.has-flag {
-    background-color: blue; /* TODO use something different.. */
+#game-cells td.has-flag:empty:not(.revealed)::after {
+    content: "F";
+    visibility: visible;
+    speak: normal;
 }
 
 #game-cells td.has-mine {

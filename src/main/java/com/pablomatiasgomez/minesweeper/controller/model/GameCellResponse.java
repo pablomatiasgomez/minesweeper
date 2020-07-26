@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 
 public class GameCellResponse {
 
-	private final boolean opened;
+	private final boolean revealed;
 	private final boolean hasFlag;
 	@Nullable
 	private final Boolean hasMine;
@@ -16,10 +16,10 @@ public class GameCellResponse {
 	private final Integer adjacentMinesCount;
 
 	public GameCellResponse(Game game, GameCell gameCell) {
-		this.opened = gameCell.isOpened();
+		this.revealed = gameCell.isRevealed();
 		this.hasFlag = gameCell.getHasFlag();
-		// Only expose the mines information if the cell was opened, or game ended:
-		if (GameStatus.FINISHED_STATUES.contains(game.getStatus()) || gameCell.isOpened()) {
+		// Only expose the mines information if the cell was revealed, or game ended:
+		if (GameStatus.FINISHED_STATUES.contains(game.getStatus()) || gameCell.isRevealed()) {
 			this.hasMine = gameCell.getHasMine();
 			this.adjacentMinesCount = gameCell.getAdjacentMinesCount();
 		} else {
@@ -28,8 +28,8 @@ public class GameCellResponse {
 		}
 	}
 
-	public boolean getOpened() {
-		return opened;
+	public boolean getRevealed() {
+		return revealed;
 	}
 
 	public boolean getHasFlag() {
