@@ -1,0 +1,22 @@
+
+#game-cells td:empty::after {
+    content: "0";
+    visibility: hidden;
+    speak: none;
+}
+
+#game-cells td {
+    text-align: center;
+}
+
+#game-cells td.opened {
+    background-color: lightgrey;
+}
+
+#game-cells td.has-flag {
+    background-color: blue; /* TODO use something different.. */
+}
+
+#game-cells td.has-mine {
+    background-color: red;
+}

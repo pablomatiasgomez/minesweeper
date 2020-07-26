@@ -29,6 +29,11 @@ function ApiConnector() {
             return request(GAMES_PATH + "/" + gameId, "PATCH", [
                 {op: "REPLACE", path: `cells/${row}/${col}/opened`, value: true}
             ]);
+        },
+        flagCell: (gameId, row, col, hasFlag) => {
+            return request(GAMES_PATH + "/" + gameId, "PATCH", [
+                {op: "REPLACE", path: `cells/${row}/${col}/hasFlag`, value: hasFlag}
+            ]);
         }
     };
 }
