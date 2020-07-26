@@ -23,14 +23,19 @@ import spark.Spark;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+	private static final String SERVER_PORT_ARGUMENT = "server.port";
 
 	public static void main(String[] args) {
+		Map<String, String> arguments = argsToMap(args);
 		System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "10");
 		LOG.info("Starting app..");
 
@@ -43,7 +48,7 @@ public class Main {
 		GameService gameService = new GameService(gameRepository);
 
 		Spark.staticFiles.location("/dist");
-		Spark.port(8081);
+		Spark.port(Integer.parseInt(arguments.getOrDefault(SERVER_PORT_ARGUMENT, "8080")));
 		Spark.exception(Exception.class, (e, request, response) -> {
 			LOG.error(e.getMessage(), e);
 			response.status(500);
@@ -96,6 +101,12 @@ public class Main {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static Map<String, String> argsToMap(String[] args) {
+		return Stream.of(args)
+				.map(arg -> arg.substring(1).split("=", 2))
+				.collect(Collectors.toMap(e -> e[0], e -> e[1]));
 	}
 
 }

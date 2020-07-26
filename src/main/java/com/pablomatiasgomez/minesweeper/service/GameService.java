@@ -91,7 +91,6 @@ public class GameService {
 		return gameRepository.updateGame(game);
 	}
 
-
 	/**
 	 * Checks if the given game is already won, which happens if all the cells,
 	 * except the ones that have mines, were already revealed.

@@ -8,4 +8,4 @@ if [[ $PID ]]; then
 	kill "$PID"
 fi
 echo "Starting app!"
-nohup /usr/bin/java -jar target/minesweeper-jar-with-dependencies.jar >> logs/stdout.log 2>&1 &
+nohup /usr/bin/java -jar target/minesweeper-jar-with-dependencies.jar -server.port=8081 >> logs/stdout.log 2>&1 &
