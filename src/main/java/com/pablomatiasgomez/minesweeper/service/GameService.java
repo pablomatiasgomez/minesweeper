@@ -22,26 +22,55 @@ public class GameService {
 		this.gameRepository = gameRepository;
 	}
 
+	/**
+	 * Creates a new game with the given configuration.
+	 * Mines will be placed in 15% of the cells.
+	 *
+	 * @return the created {@link Game}
+	 */
 	public Game createGame(int rowsCount, int colsCount) {
+		rowsCount = Math.min(rowsCount, MAX_ROWS);
+		colsCount = Math.min(colsCount, MAX_COLS);
 		int minesCount = numberOfMines(rowsCount, colsCount);
 		List<List<GameCell>> cells = createCells(rowsCount, colsCount, minesCount);
 		Game game = new Game(rowsCount, colsCount, minesCount, GameStatus.PLAYING, cells);
 		return gameRepository.createGame(game);
 	}
 
-	private List<List<GameCell>> createCells(int rowsCount, int colsCount, int minesCount) {
-		// First we create a matrix where all the mines will be:
-		boolean[][] mines = new boolean[rowsCount][colsCount];
-		int placedMines = 0;
+	/**
+	 * Get a game by id.
+	 */
+	public Game getGame(String gameId) {
+		return gameRepository.getGame(gameId)
+				.orElseThrow(() -> new IllegalArgumentException("Game not found!"));
+	}
 
-		while (placedMines < minesCount) {
-			int row = random.nextInt(rowsCount);
-			int col = random.nextInt(colsCount);
-			if (!mines[row][col]) {
-				mines[row][col] = true;
-				placedMines++;
-			}
+	public Game openCell(String gameId, int row, int col) {
+		Game game = getGame(gameId);
+		GameCell cell = game.getCells().get(row).get(col);
+		if (cell.isOpened()) {
+			throw new IllegalStateException("Cell is already opened!");
 		}
+		if (cell.getHasMine()) {
+			// TODO game.setStatus(lost);
+		}
+		// TODO cell.setopened(true)
+		if (cell.getAdjacentMinesCount() == 0) {
+			// TODO open all adjacent mines.
+		}
+		return game;
+	}
+
+	public Game flagCell(String gameId, int row, int col, boolean hasFlag) {
+		Game game = getGame(gameId);
+		GameCell cell = game.getCells().get(row).get(col);
+		// TODO cell.setHasFlag(hasFlag)
+		return game;
+	}
+
+	private List<List<GameCell>> createCells(int rowsCount, int colsCount, int minesCount) {
+		// First we create a matrix where all the mines will be placed:
+		boolean[][] mines = createRandomMinesMatrix(rowsCount, colsCount, minesCount);
 
 		// Now we create the cells by using the matrix of mines to calculate the adjacent count
 		return IntStream.range(0, rowsCount).boxed()
@@ -54,6 +83,20 @@ public class GameService {
 						})
 						.collect(Collectors.toList()))
 				.collect(Collectors.toList());
+	}
+
+	private boolean[][] createRandomMinesMatrix(int rowsCount, int colsCount, int minesCount) {
+		boolean[][] mines = new boolean[rowsCount][colsCount];
+		int placedMines = 0;
+		while (placedMines < minesCount) {
+			int row = random.nextInt(rowsCount);
+			int col = random.nextInt(colsCount);
+			if (!mines[row][col]) {
+				mines[row][col] = true;
+				placedMines++;
+			}
+		}
+		return mines;
 	}
 
 	/**
@@ -91,4 +134,5 @@ public class GameService {
 	private int numberOfMines(int rowsCount, int colsCount) {
 		return (int) Math.floor(rowsCount * colsCount * 0.15);
 	}
+
 }

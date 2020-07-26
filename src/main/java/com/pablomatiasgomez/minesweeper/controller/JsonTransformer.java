@@ -1,6 +1,7 @@
 package com.pablomatiasgomez.minesweeper.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import spark.ResponseTransformer;
 
@@ -17,6 +18,14 @@ public class JsonTransformer implements ResponseTransformer {
 	@Override
 	public String render(Object object) {
 		return writeValue(object);
+	}
+
+	public <T> T readValue(String content, TypeReference<T> valueTypeRef) {
+		try {
+			return objectMapper.readValue(content, valueTypeRef);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public <T> T readValue(String content, Class<T> valueType) {

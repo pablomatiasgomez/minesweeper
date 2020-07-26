@@ -1,6 +1,7 @@
 package com.pablomatiasgomez.minesweeper;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
@@ -41,6 +42,27 @@ public class GameIntegrationTest {
 				.body("cells", hasItem(hasItem(allOf(
 						hasEntry("opened", Boolean.FALSE),
 						hasEntry("hasFlag", Boolean.FALSE)))));
+	}
+
+	@Test
+	public void testGetById() {
+		String gameId = given()
+				.contentType(ContentType.JSON)
+				.body(new CreateGameRequest(15, 20))
+				.when()
+				.post("/api/games")
+				.then()
+				.statusCode(HttpServletResponse.SC_OK)
+				.extract().body().jsonPath().getString("id");
+
+		when()
+				.get("/api/games/" + gameId)
+				.then()
+				.statusCode(HttpServletResponse.SC_OK)
+				.body("id", equalTo(gameId))
+				.body("rowsCount", equalTo(15))
+				.body("colsCount", equalTo(20))
+				.body("minesCount", equalTo(45));
 	}
 
 }

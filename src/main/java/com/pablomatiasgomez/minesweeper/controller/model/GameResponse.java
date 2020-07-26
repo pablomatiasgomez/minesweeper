@@ -16,8 +16,7 @@ public class GameResponse {
 	private final List<List<GameCellResponse>> cells;
 
 	public GameResponse(Game game) {
-		this.id
-				= game.getId();
+		this.id = game.getId();
 		this.rowsCount = game.getRowsCount();
 		this.colsCount = game.getColsCount();
 		this.minesCount = game.getMinesCount();

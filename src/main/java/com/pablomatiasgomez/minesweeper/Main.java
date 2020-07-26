@@ -47,6 +47,16 @@ public class Main {
 			response.status(500);
 			response.body(e.getMessage());
 		});
+		Spark.exception(IllegalArgumentException.class, (e, request, response) -> {
+			LOG.error(e.getMessage(), e);
+			response.status(400);
+			response.body(e.getMessage());
+		});
+		Spark.exception(IllegalStateException.class, (e, request, response) -> {
+			LOG.error(e.getMessage(), e);
+			response.status(400);
+			response.body(e.getMessage());
+		});
 
 		new GameController(jsonTransformer, gameService);
 	}
