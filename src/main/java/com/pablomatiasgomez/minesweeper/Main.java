@@ -9,6 +9,11 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+import com.pablomatiasgomez.minesweeper.controller.GameController;
+import com.pablomatiasgomez.minesweeper.controller.JsonTransformer;
+import com.pablomatiasgomez.minesweeper.repository.GameRepository;
+import com.pablomatiasgomez.minesweeper.service.GameService;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.slf4j.Logger;
@@ -25,14 +30,16 @@ public class Main {
 	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
 	public static void main(String[] args) {
+		System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "10");
 		LOG.info("Starting app..");
 
-		getMongoClient(getDatabaseProperties());
-
-		System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "10");
-
 		MongoClient mongoClient = getMongoClient(getDatabaseProperties());
+		MongoDatabase database = mongoClient.getDatabase("minesweeper");
 		ObjectMapper objectMapper = createObjectMapper();
+		JsonTransformer jsonTransformer = new JsonTransformer(objectMapper);
+
+		GameRepository gameRepository = new GameRepository(objectMapper, database);
+		GameService gameService = new GameService(gameRepository);
 
 		Spark.port(8080);
 		Spark.exception(Exception.class, (e, request, response) -> {
@@ -40,6 +47,8 @@ public class Main {
 			response.status(500);
 			response.body(e.getMessage());
 		});
+
+		new GameController(jsonTransformer, gameService);
 	}
 
 	private static ObjectMapper createObjectMapper() {

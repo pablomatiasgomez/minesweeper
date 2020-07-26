@@ -8,42 +8,42 @@ import java.util.Objects;
 
 /**
  * Represents all the data related to a given Game instance, that is:
- * - Metadata like name, status, number of rows and columns, etc.
+ * - Metadata like status, number of rows and cols, etc.
  * - The matrix itself which contains all the information of the state of each cell.
  */
 public class Game extends BaseDbEntity {
 
-	private final String name;
 	private final int rowsCount;
-	private final int columnsCount;
+	private final int colsCount;
+	private final int minesCount;
 	private final GameStatus status;
-	// Access is matrix[row][column]
+	// Access is matrix[row][col]
 	private final List<List<GameCell>> cells;
 
 	@JsonCreator
 	public Game(
-			@JsonProperty(value = "name", required = true) String name,
 			@JsonProperty(value = "rowsCount", required = true) int rowsCount,
-			@JsonProperty(value = "columnsCount", required = true) int columnsCount,
+			@JsonProperty(value = "colsCount", required = true) int colsCount,
+			@JsonProperty(value = "minesCount", required = true) int minesCount,
 			@JsonProperty(value = "status", required = true) GameStatus status,
 			@JsonProperty(value = "cells", required = true) List<List<GameCell>> cells) {
-		this.name = Objects.requireNonNull(name);
 		this.rowsCount = rowsCount;
-		this.columnsCount = columnsCount;
+		this.colsCount = colsCount;
+		this.minesCount = minesCount;
 		this.status = Objects.requireNonNull(status);
 		this.cells = Objects.requireNonNull(cells);
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public int getRowsCount() {
 		return rowsCount;
 	}
 
-	public int getColumnsCount() {
-		return columnsCount;
+	public int getColsCount() {
+		return colsCount;
+	}
+
+	public int getMinesCount() {
+		return minesCount;
 	}
 
 	public GameStatus getStatus() {

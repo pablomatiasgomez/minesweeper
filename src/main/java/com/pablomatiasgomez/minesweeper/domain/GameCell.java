@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents a single cell in the game.
- * Does not contain any information related ot it's position because that comes from the position in the matrix.
+ * Does not contain any information related to it's position because that comes from the position in the matrix.
  */
 public class GameCell {
 
@@ -25,8 +25,8 @@ public class GameCell {
 	@JsonCreator
 	public GameCell(
 			@JsonProperty(value = "opened", required = true) boolean opened,
-			@JsonProperty(value = "hasMine", required = true) boolean hasMine,
 			@JsonProperty(value = "hasFlag", required = true) boolean hasFlag,
+			@JsonProperty(value = "hasMine", required = true) boolean hasMine,
 			@JsonProperty(value = "adjacentMinesCount", required = true) int adjacentMinesCount) {
 		this.opened = opened;
 		this.hasFlag = hasFlag;
@@ -34,7 +34,7 @@ public class GameCell {
 		this.adjacentMinesCount = adjacentMinesCount;
 	}
 
-	public boolean getOpened() {
+	public boolean isOpened() {
 		return opened;
 	}
 

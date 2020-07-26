@@ -1,7 +1,5 @@
 package com.pablomatiasgomez.minesweeper.repository;
 
-import static com.mongodb.client.model.Filters.eq;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -11,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class GameRepository extends BaseDbRepository<Game> {
 
@@ -19,6 +16,10 @@ public class GameRepository extends BaseDbRepository<Game> {
 
 	public GameRepository(ObjectMapper objectMapper, MongoDatabase database) {
 		super(Game.class, objectMapper, database.getCollection("games"));
+	}
+
+	public Game createGame(Game game) {
+		return create(game);
 	}
 
 	public Optional<Game> getGame(String id) {
