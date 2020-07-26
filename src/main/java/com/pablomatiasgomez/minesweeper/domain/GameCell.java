@@ -12,8 +12,8 @@ public class GameCell {
 	/**
 	 * Whether the user already opened this cell or not which means it's visible to them or not.
 	 */
-	private final boolean opened;
-	private final boolean hasFlag;
+	private boolean opened;
+	private boolean hasFlag;
 
 	// Private fields (not to be exposed, unless already opened):
 	private final boolean hasMine;
@@ -38,8 +38,18 @@ public class GameCell {
 		return opened;
 	}
 
+	public GameCell setOpened(boolean opened) {
+		this.opened = opened;
+		return this;
+	}
+
 	public boolean getHasFlag() {
 		return hasFlag;
+	}
+
+	public GameCell setHasFlag(boolean hasFlag) {
+		this.hasFlag = hasFlag;
+		return this;
 	}
 
 	public boolean getHasMine() {

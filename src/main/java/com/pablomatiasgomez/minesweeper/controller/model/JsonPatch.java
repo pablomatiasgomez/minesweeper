@@ -19,7 +19,7 @@ public class JsonPatch {
 	public JsonPatch(
 			@JsonProperty(value = "op", required = true) JsonPatchOp op,
 			@JsonProperty(value = "path", required = true) String path,
-			@JsonProperty(value = "value", required = true) String value) {
+			@JsonProperty(value = "value", required = true) Object value) {
 		this.op = Objects.requireNonNull(op);
 		this.path = Objects.requireNonNull(path);
 		this.value = Objects.requireNonNull(value);

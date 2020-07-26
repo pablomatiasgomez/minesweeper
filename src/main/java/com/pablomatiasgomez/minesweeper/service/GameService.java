@@ -51,21 +51,22 @@ public class GameService {
 		if (cell.isOpened()) {
 			throw new IllegalStateException("Cell is already opened!");
 		}
+		cell.setOpened(true);
 		if (cell.getHasMine()) {
-			// TODO game.setStatus(lost);
+			game.setStatus(GameStatus.LOST);
 		}
-		// TODO cell.setopened(true)
+		// TODO handle win case (mines == 0?)
 		if (cell.getAdjacentMinesCount() == 0) {
 			// TODO open all adjacent mines.
 		}
-		return game;
+		return gameRepository.updateGame(game);
 	}
 
 	public Game flagCell(String gameId, int row, int col, boolean hasFlag) {
 		Game game = getGame(gameId);
 		GameCell cell = game.getCells().get(row).get(col);
-		// TODO cell.setHasFlag(hasFlag)
-		return game;
+		cell.setHasFlag(hasFlag);
+		return gameRepository.updateGame(game);
 	}
 
 	private List<List<GameCell>> createCells(int rowsCount, int colsCount, int minesCount) {

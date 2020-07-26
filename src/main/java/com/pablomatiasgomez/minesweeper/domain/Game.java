@@ -16,7 +16,7 @@ public class Game extends BaseDbEntity {
 	private final int rowsCount;
 	private final int colsCount;
 	private final int minesCount;
-	private final GameStatus status;
+	private GameStatus status;
 	// Access is matrix[row][col]
 	private final List<List<GameCell>> cells;
 
@@ -48,6 +48,11 @@ public class Game extends BaseDbEntity {
 
 	public GameStatus getStatus() {
 		return status;
+	}
+
+	public Game setStatus(GameStatus status) {
+		this.status = status;
+		return this;
 	}
 
 	public List<List<GameCell>> getCells() {

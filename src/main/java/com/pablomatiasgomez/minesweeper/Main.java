@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.common.annotations.VisibleForTesting;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
@@ -61,7 +62,8 @@ public class Main {
 		new GameController(jsonTransformer, gameService);
 	}
 
-	private static ObjectMapper createObjectMapper() {
+	@VisibleForTesting
+	static ObjectMapper createObjectMapper() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE);
 		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -71,7 +73,8 @@ public class Main {
 		return objectMapper;
 	}
 
-	private static MongoClient getMongoClient(Properties databaseProperties) {
+	@VisibleForTesting
+	static MongoClient getMongoClient(Properties databaseProperties) {
 		String connectionString = (String) databaseProperties.get("mongodb.connectionString");
 
 		MongoClientSettings settings = MongoClientSettings.builder()
@@ -83,7 +86,8 @@ public class Main {
 		return MongoClients.create(settings);
 	}
 
-	private static Properties getDatabaseProperties() {
+	@VisibleForTesting
+	static Properties getDatabaseProperties() {
 		try {
 			Properties properties = new Properties();
 			properties.load(Objects.requireNonNull(Main.class.getClassLoader().getResourceAsStream("database.properties")));

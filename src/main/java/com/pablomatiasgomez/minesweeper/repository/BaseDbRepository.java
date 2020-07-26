@@ -40,16 +40,6 @@ public abstract class BaseDbRepository<T extends BaseDbEntity> {
 		this.collection = collection;
 	}
 
-	protected void createIndex(String name, String... fields) {
-		LOG.info("Creating index with name {} for collection {}", name, collection.getNamespace());
-		collection.createIndex(Indexes.ascending(fields), new IndexOptions().name(name));
-	}
-
-	protected void createUniqueIndex(String name, String... fields) {
-		LOG.info("Creating unique index with name {} for collection {}", name, collection.getNamespace());
-		collection.createIndex(Indexes.ascending(fields), new IndexOptions().name(name).unique(true));
-	}
-
 	protected Optional<T> findOne(Bson filter) {
 		return Optional.ofNullable(collection.find(filter).first()).map(this::parseDocument);
 	}
@@ -60,10 +50,6 @@ public abstract class BaseDbRepository<T extends BaseDbEntity> {
 
 	protected Stream<T> find(Bson filter) {
 		return iterableToStream(collection.find(filter));
-	}
-
-	protected Stream<Document> aggregate(List<? extends Bson> pipeline) {
-		return StreamSupport.stream(collection.aggregate(pipeline).spliterator(), false);
 	}
 
 	@Nullable

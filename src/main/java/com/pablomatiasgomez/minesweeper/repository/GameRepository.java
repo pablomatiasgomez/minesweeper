@@ -22,4 +22,7 @@ public class GameRepository extends BaseDbRepository<Game> {
 		return findOne(Filters.eq("_id", new ObjectId(id)));
 	}
 
+	public Game updateGame(Game game) {
+		return replace(game);
+	}
 }
