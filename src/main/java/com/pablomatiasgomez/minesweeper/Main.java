@@ -43,7 +43,7 @@ public class Main {
 		GameService gameService = new GameService(gameRepository);
 
 		Spark.staticFiles.location("/dist");
-		Spark.port(8080);
+		Spark.port(8081);
 		Spark.exception(Exception.class, (e, request, response) -> {
 			LOG.error(e.getMessage(), e);
 			response.status(500);
