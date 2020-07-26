@@ -75,6 +75,18 @@
 
     <build>
         <finalName>minesweeper</finalName>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/webapp</directory>
+                <includes>
+                    <include>dist/</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <!-- Used to execute directly using mvn exec:java -->

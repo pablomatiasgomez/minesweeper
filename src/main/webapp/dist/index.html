@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Minesweeper</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container">
+    <div class="py-3 text-center">
+        <h2>Minesweeper</h2>
+        <p class="lead">REST Api based game</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 order-md-1 mb-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span>Create game</span>
+            </h4>
+            <div class="form-group">
+                <label for="rows">Rows</label>
+                <input type="number" class="form-control" id="rows" value="20" placeholder="e.g. 20">
+            </div>
+            <div class="form-group">
+                <label for="cols">Cols</label>
+                <input type="number" class="form-control" id="cols" value="20" placeholder="e.g. 20">
+            </div>
+            <button class="btn btn-primary btn-md btn-block" type="submit" id="create-game">Create</button>
+        </div>
+
+        <div class="col-md-9 order-md-2">
+            <table class="table table-bordered table-sm">
+                <tbody id="game-cells"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer class="my-4 pt-1 text-muted text-center text-small">
+        <p class="mb-1">Developed by <a href="https://pablomatiasgomez.com.ar">Pablo Matias Gomez</a></p>
+    </footer>
+</div>
+
+<script type="text/javascript" src="js/ApiConnector.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+
+</body>
+</html>

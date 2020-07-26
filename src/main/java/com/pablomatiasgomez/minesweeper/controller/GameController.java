@@ -26,8 +26,8 @@ public class GameController {
 
 	// Not the cleanest way of implementing the mutations, but fine for now given that there are only
 	// two things that can be done: opening a cell, or adding a flag to the cell..
-	private static final Pattern OPEN_CELL_PATH = Pattern.compile("^cells/(\\d)/(\\d)/opened$");
-	private static final Pattern FLAG_CELL_PATH = Pattern.compile("^cells/(\\d)/(\\d)/hasFlag$");
+	private static final Pattern OPEN_CELL_PATH = Pattern.compile("^cells/(\\d+)/(\\d+)/opened$");
+	private static final Pattern FLAG_CELL_PATH = Pattern.compile("^cells/(\\d+)/(\\d+)/hasFlag$");
 
 	private final JsonTransformer jsonTransformer;
 	private final GameService gameService;
