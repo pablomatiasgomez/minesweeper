@@ -64,15 +64,10 @@ public class GameController {
 
 		Spark.patch("/api/games/:id", (request, response) -> {
 			String gameId = request.params("id");
-			LOG.info("Patching cell for game with id {} ..", gameId);
-			List<JsonPatch> patches = jsonTransformer.readValue(request.body(), new TypeReference<List<JsonPatch>>() {});
-			if (patches.size() != 1) {
-				throw new IllegalArgumentException("Only 1 patch operation is allowed.");
-			}
-			JsonPatch patch = patches.get(0);
-			if (!JsonPatchOp.REPLACE.equals(patch.getOp())) {
-				throw new IllegalArgumentException("Only REPLACE can be patched.");
-			}
+			JsonPatch patch = jsonTransformer.readValue(request.body(), new TypeReference<List<JsonPatch>>() {}).stream()
+					.filter(p -> JsonPatchOp.REPLACE.equals(p.getOp()))
+					.collect(onlyElement());
+			LOG.info("Patching cell {} for game with id {} ..", patch.getPath(), gameId);
 
 			return patchOperations.entrySet()
 					.stream()
