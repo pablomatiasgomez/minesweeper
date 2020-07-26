@@ -19,18 +19,11 @@ public class GameRepository extends BaseDbRepository<Game> {
 
 	public GameRepository(ObjectMapper objectMapper, MongoDatabase database) {
 		super(Game.class, objectMapper, database.getCollection("games"));
-
-		createIndex("account", "account");
 	}
 
 	public Optional<Game> getGame(String id) {
 		LOG.info("Getting game with id {}", id);
 		return findOne(Filters.eq("_id", new ObjectId(id)));
-	}
-
-	public Stream<Game> getGames(String account) {
-		LOG.info("Getting games for account {}", account);
-		return this.find(eq("account", account));
 	}
 
 }
