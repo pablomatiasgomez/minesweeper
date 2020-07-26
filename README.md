@@ -1,5 +1,6 @@
 # minesweeper
 
+Play the game directly at https://minesweeper.pablomatiasgomez.com.ar
 
 Decisions:
 
