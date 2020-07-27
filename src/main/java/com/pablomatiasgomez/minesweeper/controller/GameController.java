@@ -68,6 +68,7 @@ public class GameController {
 					.filter(p -> JsonPatchOp.REPLACE.equals(p.getOp()))
 					.collect(onlyElement());
 			LOG.info("Patching cell {} for game with id {} ..", patch.getPath(), gameId);
+			response.header("Content-Encoding", "gzip");
 
 			return patchOperations.entrySet()
 					.stream()
