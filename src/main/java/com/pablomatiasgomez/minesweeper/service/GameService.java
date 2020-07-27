@@ -19,9 +19,9 @@ public class GameService {
 
 	public static final double MIN_MINES_RATIO_PER_CELLS = 0.05;
 	public static final double MAX_MINES_RATIO_PER_CELLS = 0.5;
-	private static final int MIN_ROWS = 10;
+	private static final int MIN_ROWS = 5;
 	private static final int MAX_ROWS = 30;
-	private static final int MIN_COLS = 10;
+	private static final int MIN_COLS = 5;
 	private static final int MAX_COLS = 30;
 	private static final Random random = new Random();
 
