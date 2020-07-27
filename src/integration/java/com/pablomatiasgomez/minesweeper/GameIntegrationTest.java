@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import com.mongodb.client.MongoClient;
 import com.pablomatiasgomez.minesweeper.controller.model.CreateGameRequest;
@@ -50,7 +51,7 @@ public class GameIntegrationTest {
 				.body("id", notNullValue())
 				.body("rowsCount", equalTo(10))
 				.body("colsCount", equalTo(15))
-				.body("minesCount", equalTo(5))
+				.body("minesCount", equalTo(7))
 				.body("status", equalTo("PLAYING"))
 				.body("cells", hasSize(10))
 				.body("cells[1]", hasSize(15))
@@ -77,7 +78,7 @@ public class GameIntegrationTest {
 				.body("id", equalTo(gameId))
 				.body("rowsCount", equalTo(15))
 				.body("colsCount", equalTo(20))
-				.body("minesCount", equalTo(45));
+				.body("minesCount", equalTo(150));
 	}
 
 	@Test
@@ -110,6 +111,46 @@ public class GameIntegrationTest {
 				// The cell is now reveled so we are able to see if it has a mine and the number of adjacent mines.
 				.body("cells[" + row + "][" + col + "].hasMine", equalTo(false))
 				.body("cells[" + row + "][" + col + "].adjacentMinesCount", notNullValue());
+	}
+
+	@Test
+	public void testFlagCell() {
+		String gameId = given()
+				.contentType(ContentType.JSON)
+				.body(new CreateGameRequest(15, 20, 45))
+				.when()
+				.post("/api/games")
+				.then()
+				.statusCode(HttpServletResponse.SC_OK)
+				.extract().body().jsonPath().getString("id");
+
+		int row = 5;
+		int col = 9;
+		String path = "cells/" + row + "/" + col + "/hasFlag";
+		given()
+				.contentType(ContentType.JSON)
+				.body(Collections.singletonList(new JsonPatch(JsonPatchOp.REPLACE, path, Boolean.TRUE)))
+				.patch("/api/games/" + gameId)
+				.then()
+				.statusCode(HttpServletResponse.SC_OK)
+				.body("id", equalTo(gameId))
+				.body("cells[" + row + "][" + col + "].revealed", equalTo(false))
+				.body("cells[" + row + "][" + col + "].hasFlag", equalTo(true))
+				.body("cells[" + row + "][" + col + "].hasMine", nullValue())
+				.body("cells[" + row + "][" + col + "].adjacentMinesCount", nullValue());
+
+		// Un-flag the cell:
+		given()
+				.contentType(ContentType.JSON)
+				.body(Collections.singletonList(new JsonPatch(JsonPatchOp.REPLACE, path, Boolean.FALSE)))
+				.patch("/api/games/" + gameId)
+				.then()
+				.statusCode(HttpServletResponse.SC_OK)
+				.body("id", equalTo(gameId))
+				.body("cells[" + row + "][" + col + "].revealed", equalTo(false))
+				.body("cells[" + row + "][" + col + "].hasFlag", equalTo(false))
+				.body("cells[" + row + "][" + col + "].hasMine", nullValue())
+				.body("cells[" + row + "][" + col + "].adjacentMinesCount", nullValue());
 	}
 
 	@Test
