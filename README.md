@@ -40,11 +40,12 @@ Available methods are:
 
 ## Implementation details & decisions:
 
-* I defined myself a limit of 10 hours to build this, just because I don't think I should spend 5 days working on a test. A few features have been left out:
+* I set myself a limit of 10 hours to build this, so a few features have been left out:
     * A game can be paused/resumed but not after leaving the page (there is no way to retrieve a previous created game).
     * Accounts are not supported.
     * The feedback exposed to the user when the game finishes is vague, and could be improved. E.g. show which flags where wrong, which mines they missed, etc.
-    * The way the game updated is being handled in the FE could be improved a lot, currently it throws away the entire table and renders it back again.
-* For simplicity and speed, I only wrote backend integration tests, so that I test all layers at once(except the FE). This gives a code coverage of 85%. Unit tests could easily be created because classes are correctly isolated with their own logic, and external services/models could be mocked.
-* All the patch operations currently return the entire game with all their cells. This works fine because the game entity is not big (and I'm using gzip because the content is pretty much repeated), but it is not ideal. Eventually the cells could be moved to a subresource, or we could return only the modified cells when patching a game, and update those in the frontend instead of rendering the entire game again.
+    * The way to handle the game updates in the FE could be improved a lot, currently it throws away the entire table and renders it back again.
+* For simplicity and speed, I only wrote backend integration tests, so that I test all layers at once, except the FE. This gives a lines coverage of 88%. Unit tests could easily be created because classes are correctly isolated with their own logic, and external services/models could be mocked.
+* Most of the tests cover the successful cases, if more time is available, there should be added other tests that cover edge cases, and not valid requests.
+* All the patch operations currently return the entire game with all their cells. This works fine because the game entity is not big (and I'm using gzip because the content is pretty much repeated), but it is not ideal. Eventually the cells could be moved to a sub resource, or we could return only the modified cells when patching a game, and update those in the frontend instead of rendering the entire game again.
 * The patch request is based on rfc6902. This is because the cells are represented as an array of arrays, and modifying an array cannot be represented with a partial game entity (unless using empty objects which is not ideal).

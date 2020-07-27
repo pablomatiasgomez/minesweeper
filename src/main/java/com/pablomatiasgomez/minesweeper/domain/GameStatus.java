@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 
 import java.util.Set;
 
-// TODO add PAUSED status and handle timing
 public enum GameStatus {
 	PLAYING,
 	PAUSED,

@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -16,6 +17,7 @@ import com.pablomatiasgomez.minesweeper.controller.model.JsonPatch;
 import com.pablomatiasgomez.minesweeper.controller.model.JsonPatchOp;
 import com.pablomatiasgomez.minesweeper.domain.Game;
 import com.pablomatiasgomez.minesweeper.domain.GameCell;
+import com.pablomatiasgomez.minesweeper.domain.GameStatus;
 import com.pablomatiasgomez.minesweeper.repository.GameRepository;
 import io.restassured.http.ContentType;
 import org.apache.commons.lang3.tuple.Pair;
@@ -217,6 +219,45 @@ public class GameIntegrationTest {
 				.body("id", equalTo(gameId))
 				.body("status", equalTo("LOST"));
 	}
+
+	@Test
+	public void testPauseAndResumeGame() {
+		String gameId = given()
+				.contentType(ContentType.JSON)
+				.body(new CreateGameRequest(15, 20, 45))
+				.when()
+				.post("/api/games")
+				.then()
+				.statusCode(HttpServletResponse.SC_OK)
+				.body("playingSince", notNullValue())
+				.body("playedMs", equalTo(0))
+				.extract().body().jsonPath().getString("id");
+
+		// Pause game
+		given()
+				.contentType(ContentType.JSON)
+				.body(Collections.singletonList(new JsonPatch(JsonPatchOp.REPLACE, "status", GameStatus.PAUSED)))
+				.patch("/api/games/" + gameId)
+				.then()
+				.statusCode(HttpServletResponse.SC_OK)
+				.body("id", equalTo(gameId))
+				.body("status", equalTo("PAUSED"))
+				.body("playingSince", nullValue())
+				.body("playedMs", greaterThan(1));
+
+		// Resume game:
+		given()
+				.contentType(ContentType.JSON)
+				.body(Collections.singletonList(new JsonPatch(JsonPatchOp.REPLACE, "status", GameStatus.PLAYING)))
+				.patch("/api/games/" + gameId)
+				.then()
+				.statusCode(HttpServletResponse.SC_OK)
+				.body("id", equalTo(gameId))
+				.body("status", equalTo("PLAYING"))
+				.body("playingSince", notNullValue())
+				.body("playedMs", greaterThan(0));
+	}
+
 
 	private Pair<Integer, Integer> getCellWithMine(Game game) {
 		return getCellThatMatches(game, GameCell::getHasMine);
