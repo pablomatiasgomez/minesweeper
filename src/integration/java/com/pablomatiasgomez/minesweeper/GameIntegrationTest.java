@@ -42,7 +42,7 @@ public class GameIntegrationTest {
 	public void testCreateGame() {
 		given()
 				.contentType(ContentType.JSON)
-				.body(new CreateGameRequest(10, 15))
+				.body(new CreateGameRequest(10, 15, 5))
 				.when()
 				.post("/api/games")
 				.then()
@@ -50,7 +50,7 @@ public class GameIntegrationTest {
 				.body("id", notNullValue())
 				.body("rowsCount", equalTo(10))
 				.body("colsCount", equalTo(15))
-				.body("minesCount", equalTo(22))
+				.body("minesCount", equalTo(5))
 				.body("status", equalTo("PLAYING"))
 				.body("cells", hasSize(10))
 				.body("cells[1]", hasSize(15))
@@ -63,7 +63,7 @@ public class GameIntegrationTest {
 	public void testGetById() {
 		String gameId = given()
 				.contentType(ContentType.JSON)
-				.body(new CreateGameRequest(15, 20))
+				.body(new CreateGameRequest(15, 20, 999))
 				.when()
 				.post("/api/games")
 				.then()
@@ -84,7 +84,7 @@ public class GameIntegrationTest {
 	public void testRevealCell() {
 		String gameId = given()
 				.contentType(ContentType.JSON)
-				.body(new CreateGameRequest(15, 20))
+				.body(new CreateGameRequest(15, 20, 45))
 				.when()
 				.post("/api/games")
 				.then()
@@ -116,7 +116,7 @@ public class GameIntegrationTest {
 	public void testWinGame() {
 		String gameId = given()
 				.contentType(ContentType.JSON)
-				.body(new CreateGameRequest(15, 20))
+				.body(new CreateGameRequest(15, 20, 45))
 				.when()
 				.post("/api/games")
 				.then()
@@ -152,7 +152,7 @@ public class GameIntegrationTest {
 	public void testLosingGame() {
 		String gameId = given()
 				.contentType(ContentType.JSON)
-				.body(new CreateGameRequest(15, 20))
+				.body(new CreateGameRequest(15, 20, 45))
 				.when()
 				.post("/api/games")
 				.then()
@@ -178,7 +178,7 @@ public class GameIntegrationTest {
 	}
 
 	private Pair<Integer, Integer> getCellWithMine(Game game) {
-		return getCellThatMatches(game, cell -> cell.getHasMine());
+		return getCellThatMatches(game, GameCell::getHasMine);
 	}
 
 	private Pair<Integer, Integer> getCellWithNoMine(Game game) {

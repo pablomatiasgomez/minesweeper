@@ -19,10 +19,11 @@ function ApiConnector() {
     }
 
     return {
-        createGame: (rowsCount, colsCount) => {
+        createGame: (rowsCount, colsCount, minesCount) => {
             return request(GAMES_PATH, "POST", {
                 rowsCount: rowsCount,
-                colsCount: colsCount
+                colsCount: colsCount,
+                minesCount: minesCount
             });
         },
         revealCell: (gameId, row, col) => {

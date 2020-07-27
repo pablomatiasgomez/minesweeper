@@ -13,10 +13,9 @@
     background-color: lightgrey;
 }
 
-#game-cells td.has-flag:empty:not(.revealed)::after {
-    content: "F";
-    visibility: visible;
-    speak: normal;
+#game-cells td.has-flag:empty:not(.revealed) {
+    background: url("/images/flag.png") no-repeat center center;
+    background-size: 20px;
 }
 
 #game-cells td.has-mine {

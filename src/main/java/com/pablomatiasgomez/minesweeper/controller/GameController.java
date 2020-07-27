@@ -53,7 +53,8 @@ public class GameController {
 		Spark.post("/api/games", (request, response) -> {
 			LOG.info("Creating new game..");
 			CreateGameRequest createGameRequest = jsonTransformer.readValue(request.body(), CreateGameRequest.class);
-			return new GameResponse(gameService.createGame(createGameRequest.getRowsCount(), createGameRequest.getColsCount()));
+			Game game = gameService.createGame(createGameRequest.getRowsCount(), createGameRequest.getColsCount(), createGameRequest.getMinesCount());
+			return new GameResponse(game);
 		}, jsonTransformer);
 
 		Spark.get("/api/games/:id", (request, response) -> {

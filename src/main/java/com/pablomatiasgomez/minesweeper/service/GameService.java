@@ -14,7 +14,8 @@ import java.util.stream.IntStream;
 
 public class GameService {
 
-	public static final double MINES_RATIO_PER_CELLS = 0.15;
+	public static final double MIN_MINES_RATIO_PER_CELLS = 0.05;
+	public static final double MAX_MINES_RATIO_PER_CELLS = 0.5;
 	private static final int MIN_ROWS = 10;
 	private static final int MAX_ROWS = 30;
 	private static final int MIN_COLS = 10;
@@ -33,10 +34,12 @@ public class GameService {
 	 *
 	 * @return the created {@link Game}
 	 */
-	public Game createGame(int rowsCount, int colsCount) {
+	public Game createGame(int rowsCount, int colsCount, int minesCount) {
 		rowsCount = Math.max(Math.min(rowsCount, MAX_ROWS), MIN_ROWS);
 		colsCount = Math.max(Math.min(colsCount, MAX_COLS), MIN_COLS);
-		int minesCount = numberOfMines(rowsCount, colsCount);
+		int minMines = (int) Math.floor(rowsCount * colsCount * MIN_MINES_RATIO_PER_CELLS);
+		int maxMines = (int) Math.floor(rowsCount * colsCount * MAX_MINES_RATIO_PER_CELLS);
+		minesCount = Math.max(Math.min(minesCount, maxMines), minMines);
 		List<List<GameCell>> cells = createCells(rowsCount, colsCount, minesCount);
 		Game game = new Game(rowsCount, colsCount, minesCount, GameStatus.PLAYING, cells);
 		return gameRepository.createGame(game);
@@ -172,13 +175,6 @@ public class GameService {
 				fn.accept(x, y);
 			}
 		}
-	}
-
-	/**
-	 * mines count will be, for now, 15%, of the total cells, rounding down.
-	 */
-	private int numberOfMines(int rowsCount, int colsCount) {
-		return (int) Math.floor(rowsCount * colsCount * MINES_RATIO_PER_CELLS);
 	}
 
 }
