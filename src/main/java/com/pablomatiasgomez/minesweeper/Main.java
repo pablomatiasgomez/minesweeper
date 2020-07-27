@@ -33,6 +33,7 @@ public class Main {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 	private static final String SERVER_PORT_ARGUMENT = "server.port";
+	private static final int STATIC_FILES_MAX_AGE_SECS = 60 * 60; // 1 hour
 
 	public static void main(String[] args) {
 		Map<String, String> arguments = argsToMap(args);
@@ -48,6 +49,7 @@ public class Main {
 		GameService gameService = new GameService(gameRepository);
 
 		Spark.staticFiles.location("/dist");
+		Spark.staticFiles.expireTime(STATIC_FILES_MAX_AGE_SECS);
 		Spark.port(Integer.parseInt(arguments.getOrDefault(SERVER_PORT_ARGUMENT, "8080")));
 		Spark.exception(Exception.class, (e, request, response) -> {
 			LOG.error(e.getMessage(), e);
