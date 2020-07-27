@@ -35,6 +35,16 @@ function ApiConnector() {
             return request(GAMES_PATH + "/" + gameId, "PATCH", [
                 {op: "REPLACE", path: `cells/${row}/${col}/hasFlag`, value: hasFlag}
             ]);
+        },
+        pauseGame: (gameId) => {
+            return request(GAMES_PATH + "/" + gameId, "PATCH", [
+                {op: "REPLACE", path: `status`, value: "PAUSED"}
+            ]);
+        },
+        resumeGame: (gameId) => {
+            return request(GAMES_PATH + "/" + gameId, "PATCH", [
+                {op: "REPLACE", path: `status`, value: "PLAYING"}
+            ]);
         }
     };
 }

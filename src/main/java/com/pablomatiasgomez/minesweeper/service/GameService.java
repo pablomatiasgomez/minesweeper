@@ -5,7 +5,10 @@ import com.pablomatiasgomez.minesweeper.domain.GameCell;
 import com.pablomatiasgomez.minesweeper.domain.GameStatus;
 import com.pablomatiasgomez.minesweeper.repository.GameRepository;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
@@ -41,7 +44,7 @@ public class GameService {
 		int maxMines = (int) Math.floor(rowsCount * colsCount * MAX_MINES_RATIO_PER_CELLS);
 		minesCount = Math.max(Math.min(minesCount, maxMines), minMines);
 		List<List<GameCell>> cells = createCells(rowsCount, colsCount, minesCount);
-		Game game = new Game(rowsCount, colsCount, minesCount, GameStatus.PLAYING, cells);
+		Game game = new Game(rowsCount, colsCount, minesCount, GameStatus.PLAYING, Instant.now(), 0, cells);
 		return gameRepository.createGame(game);
 	}
 
@@ -62,12 +65,13 @@ public class GameService {
 	 */
 	public Game revealCell(String gameId, int row, int col) {
 		Game game = getGame(gameId);
-		if (GameStatus.FINISHED_STATUES.contains(game.getStatus())) {
-			throw new IllegalStateException("Game is already finished!");
+		if (!GameStatus.PLAYING.equals(game.getStatus())) {
+			throw new IllegalStateException("Game is not being played!");
 		}
 		revealCell(game, row, col);
 		if (!GameStatus.FINISHED_STATUES.contains(game.getStatus()) && gameIsAlreadyWon(game)) {
 			game.setStatus(GameStatus.WON);
+			updateAndStopPlayedGameTime(game);
 		}
 		return gameRepository.updateGame(game);
 	}
@@ -80,6 +84,7 @@ public class GameService {
 		cell.setRevealed(true);
 		if (cell.getHasMine()) {
 			game.setStatus(GameStatus.LOST);
+			updateAndStopPlayedGameTime(game);
 			return;
 		}
 		if (cell.getAdjacentMinesCount() == 0) {
@@ -92,6 +97,38 @@ public class GameService {
 		GameCell cell = game.getCells().get(row).get(col);
 		cell.setHasFlag(hasFlag);
 		return gameRepository.updateGame(game);
+	}
+
+	/**
+	 * Allow pausing/resuming games
+	 */
+	public Game updateGameStatus(String gameId, GameStatus newStatus) {
+		Game game = getGame(gameId);
+		if (GameStatus.PLAYING.equals(game.getStatus()) && GameStatus.PAUSED.equals(newStatus)) {
+			return pauseGame(game);
+		} else if (GameStatus.PAUSED.equals(game.getStatus()) && GameStatus.PLAYING.equals(newStatus)) {
+			return resumeGame(game);
+		} else {
+			throw new IllegalArgumentException("Invalid game status " + newStatus);
+		}
+	}
+
+	private Game pauseGame(Game game) {
+		game.setStatus(GameStatus.PAUSED);
+		updateAndStopPlayedGameTime(game);
+		return gameRepository.updateGame(game);
+	}
+
+	private Game resumeGame(Game game) {
+		game.setStatus(GameStatus.PLAYING);
+		game.setPlayingSince(Instant.now());
+		return gameRepository.updateGame(game);
+	}
+
+	private void updateAndStopPlayedGameTime(Game game) {
+		long playedTimeMs = Duration.between(Objects.requireNonNull(game.getPlayingSince()), Instant.now()).toMillis();
+		game.addPlayedMs(playedTimeMs);
+		game.setPlayingSince(null);
 	}
 
 	/**

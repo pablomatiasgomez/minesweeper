@@ -1,4 +1,9 @@
 
+#game-time {
+    float: right;
+    font-family: monospace;
+}
+
 #game-cells td:empty::after {
     content: "0";
     visibility: hidden;

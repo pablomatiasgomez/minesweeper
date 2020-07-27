@@ -35,11 +35,13 @@
             <button class="btn btn-primary btn-md btn-block" type="submit" id="create-game">Create</button>
         </div>
 
-        <div class="col-md-9 order-md-2">
+        <div id="game-container" class="col-md-9 order-md-2 d-none">
+            <p id="game-time"></p>
             <p id="game-status"></p>
             <table class="table table-bordered table-sm">
                 <tbody id="game-cells"></tbody>
             </table>
+            <button class="btn btn-primary btn-md btn-block" type="submit" id="pause-game">Pause</button>
         </div>
     </div>
 

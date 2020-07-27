@@ -1,3 +1,15 @@
+Number.prototype.pad = function(length, chr) {
+    return this.toString().pad(length, chr);
+};
+
+String.prototype.pad = function(length, chr) {
+    let str = this;
+    while (str.length < length) {
+        str = chr + str;
+    }
+    return str;
+};
+
 (function () {
     let apiConnector = new ApiConnector();
     let gameHandler = new GameHandler(apiConnector);
