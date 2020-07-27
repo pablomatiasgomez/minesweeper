@@ -1,4 +1,4 @@
-# minesweeper game
+# Minesweeper game
 
 This is a REST API based implementation of the classic [Minesweeper Game](https://en.wikipedia.org/wiki/Minesweeper_(video_game))
 
@@ -10,7 +10,7 @@ The game is deployed and can be publicly accessed and played at: https://mineswe
 
 Take into consideration that the app is hosted in an NYC datacenter and therefore the latency could be high (~300ms), which does not mean that the app is running slow.
 
-## Running the app locally.
+## Running the app locally
 
 In order to run the app locally, you need to have
 * Maven v3+
